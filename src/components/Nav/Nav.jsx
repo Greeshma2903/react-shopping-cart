@@ -1,7 +1,7 @@
 import React from "react";
 import CartButton from "./CartButton";
 
-const Nav = () => {
+const Nav = (props) => {
   return (
     <React.Fragment>
       <div className="logo">
@@ -12,7 +12,7 @@ const Nav = () => {
         <li>categories</li>
         <li>contact</li>
       </ul>
-    <CartButton/>      
+    <CartButton onClick={props.showCart}/>      
     </React.Fragment>
   );
 };  

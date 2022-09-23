@@ -13,6 +13,7 @@ export default defineConfig({
   shortcuts: {
     "spn": "text-sm text-slate-400 font-bold tracking-wide",
     "btn-yellow":
-      "bg-yellow-500 px-3 py-2 text-slate-900 font-medium tracking-widest rounded hover:bg-yellow-300",
+      "bg-yellow-500 text-slate-900 font-medium hover:bg-yellow-300",
+    "btn-pad": "px-3 py-2 tracking-widest rounded" 
   },
 });

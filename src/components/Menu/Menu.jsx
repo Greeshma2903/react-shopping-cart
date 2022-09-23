@@ -6,7 +6,7 @@ const MENU_ITEMS = [
   { id: "m3", dishName: "Chilly Cheese Pizza", price: 22.0 },
 ];
 
-const Menu = (props) => {
+const Menu = () => {
   return (
     <ul className="flex flex-col mx-2 md:(mx-auto w-1/2) my-0 space-y-6">
       {MENU_ITEMS.map((item) => {

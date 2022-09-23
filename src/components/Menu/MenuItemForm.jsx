@@ -9,7 +9,7 @@ const MenuItemForm = (props) => {
   const formSubmitHandler = (e) => {
     e.preventDefault();
     const enteredQty = +qtyRef.current.value;
-
+    props.onAddToCart(enteredQty);
     // use context to forward it to cart component.
   };
 
@@ -29,7 +29,7 @@ const MenuItemForm = (props) => {
         }}
         ref={qtyRef}
       />
-      <Button className="btn-yellow" type="submit">
+      <Button className="btn-yellow btn-pad" type="submit">
         add
       </Button>
     </form>
