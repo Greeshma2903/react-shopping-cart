@@ -1,93 +1,114 @@
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 
 // Context API
 const CartContext = React.createContext({
   addItemCart: () => {},
   removeItemCart: () => {},
+  makeOrder: () => {},
   items: [],
   totalAmount: 0,
 });
 
-const defaultCart = {
+const defaultCartState = {
   items: [],
   totalAmount: 0,
 };
 
-// Context Provider
-export const CartContextProvider = (props) => {
-  const [updatedCart, setUpdatedCart] = useState({ ...defaultCart });
-
-  const addItemCartHandler = (item) => {
-    const indexToUpdateItem = updatedCart.items.findIndex(
-      (existingItem) => existingItem.id === item.id
-    );
-
-    setUpdatedCart((prev) => {
-      const existingItems = [...prev.items];
+const cartReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD":
+      const existingItems = [...state.items];
+      const indexOfItemUpdate = state.items.findIndex(
+        (existingItem) => existingItem.id === action.item.id
+      );
       let updatedItem;
-      // if an exisiting order needs to update
-      if (indexToUpdateItem !== -1) {
+
+      if (indexOfItemUpdate !== -1) {
+        // if an exisiting order needs to update
         updatedItem = {
-          ...existingItems[indexToUpdateItem],
-          quantity: item.quantity,
-          amount: item.price * item.quantity,
+          ...existingItems[indexOfItemUpdate],
+          quantity: action.item.quantity,
+          amount: action.item.price * action.item.quantity,
         };
-        existingItems[indexToUpdateItem] = updatedItem;
+        existingItems[indexOfItemUpdate] = updatedItem;
       } else {
         // add a new one
-        existingItems.push({ ...item, amount: item.price * item.quantity });
+        existingItems.push({
+          ...action.item,
+          amount: action.item.price * action.item.quantity,
+        });
       }
       // total amount
-      const amountChange = existingItems.reduce(
+      const amountAddCart = existingItems.reduce(
         (acc, item) => acc + item.amount,
         0
       );
 
       return {
         items: existingItems,
-        totalAmount: amountChange,
+        totalAmount: amountAddCart,
       };
-    });
 
-    console.log(updatedCart);
-  };
-
-  const removeItemCartHandler = (id) => {
-    const indexToUpdateItem = updatedCart.items.findIndex(
-      (existingItem) => existingItem.id === id
-    );
-
-    setUpdatedCart((prev) => {
-      const existingItems = [...prev.items];
-
-      if (existingItems.length === 0) return defaultCart;
-
+    case "REMOVE":
+      const indexItemRemove = state.items.findIndex(
+        (existingItem) => existingItem.id === action.id
+      );
+      const existingCartItems = [...state.items];
+      const existingItem = existingCartItems[indexItemRemove];
       let updatedItems;
-      const existingItem = existingItems[indexToUpdateItem];
-
       if (existingItem.quantity === 1) {
-        updatedItems = existingItems.filter((item) => item.id !== id);
+        updatedItems = existingCartItems.filter(
+          (item) => item.id !== action.id
+        );
       } else {
         const updatedItem = {
           ...existingItem,
           quantity: existingItem.quantity - 1,
           amount: (existingItem.quantity - 1) * existingItem.price,
         };
-        updatedItems = [...prev.items];
-        updatedItems[indexToUpdateItem] = updatedItem;
+        updatedItems = [...state.items];
+        updatedItems[indexItemRemove] = updatedItem;
       }
 
       // total amount
-      const amountChange = updatedItems.reduce(
+      const amountRemoveCart = updatedItems.reduce(
         (acc, item) => acc + item.amount,
         0
       );
 
       return {
         items: updatedItems,
-        totalAmount: amountChange,
+        totalAmount: amountRemoveCart,
       };
-    });
+
+    case "ORDER":
+      console.log("Your order has been placed!");
+      return defaultCartState;
+
+    default:
+      console.error("Invalid action on Cart, either Add or Remove items.");
+      break;
+  }
+  return defaultCartState;
+};
+
+// Context Provider
+export const CartContextProvider = (props) => {
+  const [updatedCart, dispatchUpdatedCart] = useReducer(
+    cartReducer,
+    defaultCartState
+  );
+
+  const addItemCartHandler = (item) => {
+    dispatchUpdatedCart({ type: "ADD", item: item });
+  };
+
+  const removeItemCartHandler = (id) => {
+    dispatchUpdatedCart({ type: "REMOVE", id: id });
+  };
+
+  const makeOrderHandler = () => {
+    dispatchUpdatedCart({ type: "ORDER" });
   };
 
   const ContextValue = {
@@ -95,6 +116,7 @@ export const CartContextProvider = (props) => {
     removeItemCart: removeItemCartHandler,
     items: updatedCart.items,
     totalAmount: updatedCart.totalAmount,
+    makeOrder: makeOrderHandler,
   };
 
   return (

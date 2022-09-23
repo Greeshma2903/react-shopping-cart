@@ -16,6 +16,9 @@ const Cart = (props) => {
   const cartItemRemoveHandler = (id) => {
     cartCtx.removeItemCart(id);
   };
+  const orderItemsHandler = () => {
+    cartCtx.makeOrder();
+  }
 
   const cartItems = (
     <ul className="space-y-4 my-2">
@@ -56,7 +59,7 @@ const Cart = (props) => {
           close
         </Button>
         {hasItems && (
-          <Button className="btn-pad bg-red-500 font-bold hover:(bg-red-700 text-white)">
+          <Button className="btn-pad bg-red-500 font-bold hover:(bg-red-700 text-white)" onClick={orderItemsHandler}>
             order
           </Button>
         )}
